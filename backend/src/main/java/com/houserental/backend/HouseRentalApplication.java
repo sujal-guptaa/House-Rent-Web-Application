@@ -23,6 +23,8 @@ public class HouseRentalApplication {
     @Bean
     CommandLineRunner seedProperties(PropertyRepository propertyRepository) {
         return args -> {
+            migrateLegacyRecords(propertyRepository);
+
             Set<String> existingTitles = propertyRepository.findAll()
                     .stream()
                     .map(Property::getTitle)
@@ -36,7 +38,10 @@ public class HouseRentalApplication {
                     createProperty("Student Friendly Shared Flat", "Affordable 3BHK near college and public transport.", "Delhi", "North Campus", "18000", 1, 1, "https://images.unsplash.com/photo-1484154218962-a197022b5858", "Shared Flat", true, "CampusLiving", List.of("Furnished", "Wi-Fi", "Laundry")),
                     createProperty("Premium Duplex", "Two-level duplex with dedicated workspace and terrace.", "Chennai", "OMR, Thoraipakkam", "75000", 4, 4, "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd", "Duplex", true, "SouthKey Estates", List.of("Terrace", "Study Room", "Covered Parking")),
                     createProperty("Riverside Apartment", "Calm neighborhood with scenic views and good ventilation.", "Ahmedabad", "Sabarmati Riverfront", "36000", 2, 2, "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688", "Apartment", false, "BlueBrick", List.of("Lift", "Security", "Children Play Area")),
-                    createProperty("Smart 1BHK", "Freshly renovated 1BHK with modular kitchen.", "Kolkata", "Salt Lake Sector 5", "27000", 1, 1, "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6", "Apartment", true, "HomeGrid", List.of("Modular Kitchen", "CCTV", "Power Backup"))
+                    createProperty("Smart 1BHK", "Freshly renovated 1BHK with modular kitchen.", "Kolkata", "Salt Lake Sector 5", "27000", 1, 1, "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6", "Apartment", true, "HomeGrid", List.of("Modular Kitchen", "CCTV", "Power Backup")),
+                    createProperty("Lake View 2BHK", "Quiet residential apartment near schools and hospitals.", "Jaipur", "Mansarovar Extension", "32000", 2, 2, "https://images.unsplash.com/photo-1507089947368-19c1da9775ae", "Apartment", false, "PinkCity Homes", List.of("Lift", "Parking", "Solar Water Heater")),
+                    createProperty("Tech Park Studio", "Modern studio apartment for IT professionals.", "Noida", "Sector 62", "23000", 1, 1, "https://images.unsplash.com/photo-1493809842364-78817add7ffb", "Studio", true, "MetroLease", List.of("Wi-Fi", "Security", "Gym")),
+                    createProperty("Comfort 3BHK", "Family-ready 3BHK with modular interiors.", "Surat", "Vesu Main Road", "41000", 3, 2, "https://images.unsplash.com/photo-1449844908441-8829872d2607", "Apartment", true, "Tapti Realty", List.of("Clubhouse", "Lift", "Visitor Parking"))
             );
 
             List<Property> missing = defaults.stream()
@@ -47,6 +52,43 @@ public class HouseRentalApplication {
                 propertyRepository.saveAll(missing);
             }
         };
+    }
+
+    private void migrateLegacyRecords(PropertyRepository propertyRepository) {
+        List<Property> properties = propertyRepository.findAll();
+        boolean changed = false;
+
+        for (Property property : properties) {
+            switch (property.getCity()) {
+                case "New York" -> {
+                    property.setCity("Jaipur");
+                    property.setTitle("Jaipur Heritage 2BHK");
+                    property.setAddress("C-Scheme, Jaipur");
+                    property.setListedBy("Rajasthan Dwellings");
+                    changed = true;
+                }
+                case "Austin" -> {
+                    property.setCity("Lucknow");
+                    property.setTitle("Gomti Nagar Family Villa");
+                    property.setAddress("Gomti Nagar Extension");
+                    property.setListedBy("Awadh Estates");
+                    changed = true;
+                }
+                case "San Francisco" -> {
+                    property.setCity("Pune");
+                    property.setTitle("Koregaon Park Smart Studio");
+                    property.setAddress("Koregaon Park");
+                    property.setListedBy("Pune Habitat");
+                    changed = true;
+                }
+                default -> {
+                }
+            }
+        }
+
+        if (changed) {
+            propertyRepository.saveAll(properties);
+        }
     }
 
     private Property createProperty(String title,

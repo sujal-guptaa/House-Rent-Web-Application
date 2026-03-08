@@ -1,9 +1,11 @@
+import { getAdminCredentials } from '../auth/session'
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
-const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USERNAME || 'admin'
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'Admin@123'
 
 function adminAuthHeader() {
-  const token = btoa(`${ADMIN_USERNAME}:${ADMIN_PASSWORD}`)
+  const fallbackUsername = import.meta.env.VITE_ADMIN_USERNAME || 'admin'
+  const fallbackPassword = import.meta.env.VITE_ADMIN_PASSWORD || 'Admin@123'
+  const credentials = getAdminCredentials() || { username: fallbackUsername, password: fallbackPassword }
+  const token = btoa(`${credentials.username}:${credentials.password}`)
   return { Authorization: `Basic ${token}` }
 }
 
@@ -41,6 +43,7 @@ async function request(path, options = {}) {
 
 export const api = {
   getProperties: (filters = {}) => request(`/properties${toQuery(filters)}`),
+  getCities: () => request('/properties/cities'),
   getPropertyById: (id) => request(`/properties/${id}`),
   createProperty: (payload) => request('/properties', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) }),
   updatePropertyAvailability: (id, available) => request(`/properties/${id}/availability${toQuery({ available })}`, { method: 'PATCH', headers: adminAuthHeader() }),

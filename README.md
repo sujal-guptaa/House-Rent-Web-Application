@@ -21,6 +21,7 @@ This is a full MVP for a house rental platform with:
   - Approve/reject rental requests
 - Backend security with role-based access (Spring Security + Basic Auth)
 - Rollback support for admin changes (availability/status updates, property delete)
+- Login and Register pages in frontend (local session-based auth)
 - Seeded with multiple Indian-city properties
 
 ## Tech Stack
@@ -49,6 +50,10 @@ Backend runs on `http://localhost:8080`.
 Default credentials (change via env vars):
 - Admin: `admin / Admin@123`
 - User: `user / User@123`
+
+Frontend auth notes:
+- Register creates app users with `USER` role.
+- Login with `admin / Admin@123` to access admin panel and property management routes.
 
 ### 3) Run frontend
 ```bash

@@ -36,6 +36,14 @@ body {
   text-decoration: none;
 }
 
+.link-button {
+  border: none;
+  background: transparent;
+  color: #e2e8f0;
+  cursor: pointer;
+  font: inherit;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -57,7 +65,7 @@ body {
   margin-bottom: 1.25rem;
 }
 
-.filters-grid input,
+.filters-grid input:not([type="checkbox"]),
 .filters-grid select,
 .request-form input,
 .request-form textarea,
@@ -74,6 +82,12 @@ body {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.95rem;
+}
+
+.inline-check input[type="checkbox"] {
+  width: auto;
+  padding: 0;
+  margin: 0;
 }
 
 .btn {
@@ -103,6 +117,16 @@ body {
 
 .btn-danger {
   background: #dc2626;
+}
+
+.btn-light {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .grid {
@@ -213,6 +237,30 @@ body {
 
 .error {
   color: #b91c1c;
+}
+
+.auth-wrap {
+  display: grid;
+  place-items: center;
+  min-height: 70vh;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  padding: 1.25rem;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  display: grid;
+  gap: 0.75rem;
+}
+
+.auth-card input {
+  width: 100%;
+  padding: 0.7rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
 }
 
 @media (max-width: 800px) {

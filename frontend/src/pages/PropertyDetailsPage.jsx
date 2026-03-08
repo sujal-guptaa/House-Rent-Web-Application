@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { api } from '../api/client'
 import { formatInr } from '../utils/currency'
+import { isValidEmail, isValidIndianPhone } from '../utils/validators'
 
 function PropertyDetailsPage() {
   const { id } = useParams()
@@ -21,6 +22,16 @@ function PropertyDetailsPage() {
 
   async function handleSubmit(event) {
     event.preventDefault()
+
+    if (!isValidEmail(form.tenantEmail)) {
+      setStatus('Please enter a valid email address.')
+      return
+    }
+    if (!isValidIndianPhone(form.tenantPhone)) {
+      setStatus('Please enter a valid Indian phone number.')
+      return
+    }
+
     setStatus('Submitting...')
 
     try {
@@ -75,7 +86,7 @@ function PropertyDetailsPage() {
           <input
             required
             type="tel"
-            placeholder="Your phone"
+            placeholder="Your phone (e.g. 9876543210)"
             value={form.tenantPhone}
             onChange={(e) => setForm({ ...form, tenantPhone: e.target.value })}
           />

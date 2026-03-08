@@ -24,7 +24,14 @@ public class PropertyService {
         this.adminChangeLogService = adminChangeLogService;
     }
 
-    public List<Property> getAll(String city, BigDecimal minRent, BigDecimal maxRent, Integer minBedrooms, Boolean availableOnly, String sortBy) {
+    public List<Property> getAll(String city,
+                                 BigDecimal minRent,
+                                 BigDecimal maxRent,
+                                 Integer minBedrooms,
+                                 Boolean availableOnly,
+                                 String propertyType,
+                                 Boolean furnishedOnly,
+                                 String sortBy) {
         Comparator<Property> comparator = switch (sortBy == null ? "latest" : sortBy.toLowerCase(Locale.ROOT)) {
             case "rent_asc" -> Comparator.comparing(Property::getMonthlyRent);
             case "rent_desc" -> Comparator.comparing(Property::getMonthlyRent).reversed();
@@ -39,6 +46,8 @@ public class PropertyService {
                 .filter(p -> maxRent == null || p.getMonthlyRent().compareTo(maxRent) <= 0)
                 .filter(p -> minBedrooms == null || p.getBedrooms() >= minBedrooms)
                 .filter(p -> availableOnly == null || !availableOnly || p.isAvailable())
+                .filter(p -> propertyType == null || propertyType.isBlank() || (p.getPropertyType() != null && p.getPropertyType().equalsIgnoreCase(propertyType)))
+                .filter(p -> furnishedOnly == null || !furnishedOnly || p.isFurnished())
                 .sorted(comparator)
                 .toList();
     }

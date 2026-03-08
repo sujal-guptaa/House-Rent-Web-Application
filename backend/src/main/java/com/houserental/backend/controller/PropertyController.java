@@ -26,8 +26,10 @@ public class PropertyController {
                                  @RequestParam(required = false) BigDecimal maxRent,
                                  @RequestParam(required = false) Integer minBedrooms,
                                  @RequestParam(required = false) Boolean availableOnly,
+                                 @RequestParam(required = false) String propertyType,
+                                 @RequestParam(required = false) Boolean furnishedOnly,
                                  @RequestParam(required = false) String sortBy) {
-        return propertyService.getAll(city, minRent, maxRent, minBedrooms, availableOnly, sortBy);
+        return propertyService.getAll(city, minRent, maxRent, minBedrooms, availableOnly, propertyType, furnishedOnly, sortBy);
     }
 
     @GetMapping("/cities")

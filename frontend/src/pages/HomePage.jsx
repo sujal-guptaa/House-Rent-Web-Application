@@ -4,6 +4,7 @@ import PropertyCard from '../components/PropertyCard'
 
 function HomePage() {
   const [properties, setProperties] = useState([])
+  const [cities, setCities] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [favorites, setFavorites] = useState(() => {
@@ -19,6 +20,8 @@ function HomePage() {
     maxRent: '',
     minBedrooms: '',
     availableOnly: true,
+    propertyType: '',
+    furnishedOnly: false,
     sortBy: 'latest'
   })
 
@@ -32,6 +35,8 @@ function HomePage() {
         maxRent: currentFilters.maxRent,
         minBedrooms: currentFilters.minBedrooms,
         availableOnly: currentFilters.availableOnly,
+        propertyType: currentFilters.propertyType,
+        furnishedOnly: currentFilters.furnishedOnly,
         sortBy: currentFilters.sortBy
       })
       setProperties(data)
@@ -44,6 +49,7 @@ function HomePage() {
 
   useEffect(() => {
     loadProperties()
+    api.getCities().then(setCities).catch(() => {})
   }, [])
 
   useEffect(() => {
@@ -59,6 +65,21 @@ function HomePage() {
     setFavorites((prev) => prev.includes(propertyId) ? prev.filter((id) => id !== propertyId) : [...prev, propertyId])
   }
 
+  function clearFilters() {
+    const reset = {
+      city: '',
+      minRent: '',
+      maxRent: '',
+      minBedrooms: '',
+      availableOnly: true,
+      propertyType: '',
+      furnishedOnly: false,
+      sortBy: 'latest'
+    }
+    setFilters(reset)
+    loadProperties(reset)
+  }
+
   const favoriteCount = useMemo(() => favorites.length, [favorites])
 
   return (
@@ -69,12 +90,13 @@ function HomePage() {
       </div>
 
       <form onSubmit={handleSearch} className="filters-grid">
-        <input
-          type="text"
-          placeholder="City"
+        <select
           value={filters.city}
           onChange={(e) => setFilters({ ...filters, city: e.target.value })}
-        />
+        >
+          <option value="">All Cities</option>
+          {cities.map((city) => <option key={city} value={city}>{city}</option>)}
+        </select>
         <input
           type="number"
           min="0"
@@ -97,6 +119,17 @@ function HomePage() {
           onChange={(e) => setFilters({ ...filters, minBedrooms: e.target.value })}
         />
         <select
+          value={filters.propertyType}
+          onChange={(e) => setFilters({ ...filters, propertyType: e.target.value })}
+        >
+          <option value="">All Property Types</option>
+          <option value="Apartment">Apartment</option>
+          <option value="Villa">Villa</option>
+          <option value="Studio">Studio</option>
+          <option value="Duplex">Duplex</option>
+          <option value="Shared Flat">Shared Flat</option>
+        </select>
+        <select
           value={filters.sortBy}
           onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })}
         >
@@ -113,11 +146,23 @@ function HomePage() {
           />
           Available only
         </label>
-        <button type="submit" className="btn">Apply Filters</button>
+        <label className="inline-check">
+          <input
+            type="checkbox"
+            checked={filters.furnishedOnly}
+            onChange={(e) => setFilters({ ...filters, furnishedOnly: e.target.checked })}
+          />
+          Furnished only
+        </label>
+        <div className="filter-actions">
+          <button type="submit" className="btn">Apply Filters</button>
+          <button type="button" className="btn btn-light" onClick={clearFilters}>Clear</button>
+        </div>
       </form>
 
       {loading && <p>Loading properties...</p>}
       {error && <p className="error">{error}</p>}
+      {!loading && !error && <p>Showing {properties.length} homes</p>}
 
       <div className="grid">
         {!loading && !error && properties.map((property) => (
